@@ -6,30 +6,43 @@ from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
 
-url = 'https://www.metacritic.com/browse/games/score/metascore/all/all/filtered'
+import numpy as np
+import pandas as pd
 
-req = Request(url, headers ={'User-Agent':' Mozilla/5.0'})
-webpage = urlopen(req).read()
+df = pd
 
-page_soup = soup(webpage, "html.parser")
-page_soup
+page = 1
+url = 'https://www.metacritic.com/browse/games/score/metascore/all/all/filtered?view=condensed&page={page}'
 
-containers = page_soup.findAll("li", "product game_product")
-for container in containers:
-    #print(container)
-    title = page_soup.findAll("div", "basic_stat product_title")
-    print(title)
+with requests.Session() as session:
+       while True:
+              req = Request(url, headers ={'User-Agent':' Mozilla/5.0'})
+              webpage = urlopen(req).read()
 
-containers = page_soup.findAll("div", "product_wrap")
-for container in containers:
-       #print (container)
-       ahref = container.findAll("a", href = True)
-       print (ahref[0])
-       print (container.find("div", "metascore_w small game positive"))
-      #print (container.findAll("div", "data textscore textscore_favorable"))
-       #print (container.findAll("span", "data"))
-    
+              page_soup = soup(webpage, "html.parser")
+              page_soup
+              main_container = page_soup.findAll("div", "col main_col")
 
+              containers = main_container[0].findAll("div", "product_wrap")
+              for container in containers:
+                     #print (container)
+                     games_string = container.find("a", href = True)['href']
+                     print (games_string)
+                     meta_score = container.find("div", "metascore_w small game positive").contents[0]
+                     print (meta_score)
+                     user_score = container.find('span', class_ = "data").contents[0]
+                     print (user_score)
+                     rawdate = container.find('li', 'stat release_date full_release_date')
+                     date = rawdate.find('span', 'data').contents[0]
+                     print (date)
+              #print (container.findAll("div", "data textscore textscore_favorable"))
+                     #print (container.findAll("span", "data"))
+
+              page += 1
+
+
+games_string['href']
+containers[0].findAll("a")['href']
 
 #sessions = requests.Session()   
 #response = sessions.get(url, timeout = 5)

@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup as soup
 from urllib.request import Request, urlopen
+from BeautifulSoup import BeautifulSoup
 import requests
 from requests import get
 from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
+import urllib2
 
 import numpy as np
 import pandas as pd
@@ -26,12 +28,12 @@ url = url1 + url2 + url3 +url4 + url5 + url6
 
 
 with requests.Session() as session:
-       while page < 1:
-              req = Request(url, headers ={'User-Agent':' Mozilla/5.0'})
-              webpage = urlopen(req).read()
+    while page < 2:
+        req = Request(url, headers ={'User-Agent':' Mozilla/5.0'})
+        webpage = urlopen(req).read()
 
-              page_soup = soup(webpage, "html.parser")
-              main_container = page_soup.find("div", id = "generalBody")
+        page_soup = soup(webpage, "html.parser")
+        main_container = page_soup.find("div", id = "generalBody")
 
 
 

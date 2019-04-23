@@ -6,8 +6,11 @@ from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
 import html5lib
+<<<<<<< HEAD
 import mysql.connector
 from sqlalchemy import create_engine
+=======
+>>>>>>> a4ecadb329b77d40367bd710c0a7daffc7517f14
 
 import numpy as np
 import pandas as pd
@@ -54,6 +57,7 @@ with requests.Session() as session:
               
 print ("Done")
 
+<<<<<<< HEAD
 ratings = ['crit_Pos', 'crit_Mix','crit_Neg', 'user_Pos', 'user_Mix', 'user_Neg']
 game_num = 0
 df['genre'] = ""
@@ -91,6 +95,39 @@ print ("Done")
 
 game_num = 0
 reviews = [['pos_userReview', 'mix_userReview','neg_userReview'], ['pos_critReview', 'mix_critReview', 'neg_critReview']]            
+=======
+
+with requests.Session() as session:
+       for game in df['url']:
+              while True:
+                     try:
+                            req = requests.get(game , headers ={'User-Agent':'Mozilla/5.0'})
+                            if req.status_code == 200:
+                                   break
+                            if (req.status_code == 403 or req.status_code == 404): 
+                                   print (game)
+                                   break
+                     except Exception as inst:
+                            print (inst)
+                            print (game) 
+              if (req.status_code == 403 or req.status_code == 404): 
+                     continue             
+              page_soup = soup(req.content, "html.parser")
+              container = page_soup.findAll("li", "score_count")
+              
+              df['crit_Pos'][df['url'] == game] = container[0].find("span", "count").contents[0]
+              df['crit_Mix'][df['url'] == game] = container[1].find("span", "count").contents[0]
+              df['crit_Neg'][df['url'] == game] = container[2].find("span", "count").contents[0]
+              df['user_Pos'][df['url'] == game] = container[3].find("span", "count").contents[0]
+              df['user_Mix'][df['url'] == game] = container[4].find("span", "count").contents[0]
+              df['user_Neg'][df['url'] == game] = container[5].find("span", "count").contents[0]
+
+              prod_container = page_soup.find('li', 'summary_detail product_rating')
+              df['prod_Rating'][df['url'] == game]  = prod_container.find('span', 'data').contents[0] 
+              
+print ("Done")              
+              
+>>>>>>> a4ecadb329b77d40367bd710c0a7daffc7517f14
 with requests.Session() as session:
     for game in df['url']:
         while True: 
@@ -105,6 +142,7 @@ with requests.Session() as session:
                 print (inst)
                 print (game) 
         if (req.status_code == 403 or req.status_code == 404): 
+<<<<<<< HEAD
             continue              
         page_soup = soup(req.content, "html.parser")
         container = page_soup.findAll("ol", {"class","score_counts hover_none"})
@@ -123,3 +161,22 @@ with requests.Session() as session:
 
 #df.to_sql(name='meta', con=engine, if_exists = 'append', index=False)
 df.to_csv("metacritic.csv", index = False)              
+=======
+              continue              
+        page_soup = soup(req.content, "html.parser")
+        container = page_soup.findAll("ol", "score_counts hover_none")
+
+        if len(container) == 1:       
+              df['pos_critReview'][df['url'] == game] = container[1].find("span", "count").contents[0]
+              df['mix_critReview'][df['url'] == game] = container[1].find("span", "count").contents[0]
+              df['neg_critReview'][df['url'] == game] = container[1].find("span", "count").contents[0]  
+
+       df['pos_userReview'][df['url'] == game] = container[0].find("span", "count").contents[0]
+       df['mix_userReview'][df['url'] == game] = container[0].find("span", "count").contents[0]
+       df['neg_userReview'][df['url'] == game] = container[0].find("span", "count").contents[0]      
+   
+
+
+df.to_csv("metacritic.csv", index = False)              
+
+>>>>>>> a4ecadb329b77d40367bd710c0a7daffc7517f14
